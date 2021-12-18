@@ -46,7 +46,8 @@ void Application::init()
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -63,14 +64,13 @@ void Application::init()
     {
         throw std::runtime_error("Failed to init Glad");
     }
-
 }
 
 void Application::run()
 {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    while(!glfwWindowShouldClose(m_pWindow))
+    while (!glfwWindowShouldClose(m_pWindow))
     {
 
         glfwPollEvents();

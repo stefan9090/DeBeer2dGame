@@ -5,13 +5,13 @@
 #ifndef DEBEER2D_APPLICATION_H
 #define DEBEER2D_APPLICATION_H
 
-#include <glad/glad.h> // must be included before GLFW/glfw3.h
 #include <GLFW/glfw3.h>
+#include <glad/glad.h> // must be included before GLFW/glfw3.h
 
 class Application
 {
 private:
-    GLFWwindow* m_pWindow;
+    GLFWwindow *m_pWindow;
 
 public:
     explicit Application() = default;
@@ -21,7 +21,7 @@ public:
     void run();
 
 private:
-    static void glfwErrorCallback(int error, const char* description);
+    static void glfwErrorCallback(int error, const char *description);
 };
 
 
