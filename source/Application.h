@@ -5,8 +5,8 @@
 #ifndef DEBEER2D_APPLICATION_H
 #define DEBEER2D_APPLICATION_H
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h> // must be included before GLFW/glfw3.h
+#include <GLFW/glfw3.h>
 
 class Application
 {
