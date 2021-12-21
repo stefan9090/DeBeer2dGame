@@ -42,6 +42,9 @@ bool Shader::load(std::string_view strVertexPath, std::string_view strFragmentPa
 
 bool Shader::compileShader(std::string_view strShaderPath, uint16_t shaderType, unsigned int &rShaderId)
 {
+    std::string strFullShaderPath = std::string{SHADERS_LOCATION} + strShaderPath.data();
+    LOG_INFO("Loading shader {}", strFullShaderPath);
+
     bool isOk = false;
 
     std::ifstream shaderFile;
@@ -50,7 +53,7 @@ bool Shader::compileShader(std::string_view strShaderPath, uint16_t shaderType, 
 
     try
     {
-        shaderFile.open(strShaderPath.data());
+        shaderFile.open(strFullShaderPath);
         std::stringstream shaderStream;
         shaderStream << shaderFile.rdbuf();
         shaderFile.close();

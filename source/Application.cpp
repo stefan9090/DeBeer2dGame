@@ -11,6 +11,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "Shader.h"
+
 const char *szGlslVersion = "#version 150";
 
 Application::~Application()
@@ -33,7 +35,14 @@ void Application::init()
 
     glfwSetErrorCallback(glfwErrorCallback);
 
-    m_pWindow = glfwCreateWindow(800, 600, "DeBeer2d", NULL, NULL);
+    GLFWmonitor *pMonitor = glfwGetPrimaryMonitor();
+
+    const GLFWvidmode *mode = glfwGetVideoMode(pMonitor);
+    int screenWidth = mode->width;
+    int screenHeight = mode->height;
+
+    m_pWindow = glfwCreateWindow(screenWidth, screenHeight, "DeBeer2d", pMonitor, nullptr);
+
     if (!m_pWindow)
     {
         throw std::runtime_error("Failed to creat glfw window");
@@ -63,6 +72,12 @@ void Application::init()
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         throw std::runtime_error("Failed to init Glad");
+    }
+
+    Shader spriteShader{};
+    if (!spriteShader.load("sprite.vert", "sprite.frag"))
+    {
+        LOG_ERROR("Failed to load sprite shader");
     }
 }
 
