@@ -1,9 +1,15 @@
+add_subdirectory(events)
+
 set(SOURCES
         main.cpp
         Logger.cpp Logger.h Application.cpp Application.h Shader.cpp Shader.h)
 
 add_executable(DeBeer2d ${SOURCES})
 
+# Own libs
+target_link_libraries(DeBeer2d EventSystem)
+
+# External libs
 target_link_libraries(DeBeer2d spdlog)
 target_link_libraries(DeBeer2d glfw)
 target_link_libraries(DeBeer2d glad)
