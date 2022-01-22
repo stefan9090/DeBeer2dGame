@@ -1,5 +1,3 @@
-project(EventSystem)
-
 set(SOURCES
         Event.cpp)
 
