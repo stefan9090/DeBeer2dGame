@@ -8,6 +8,8 @@
 #include <GLFW/glfw3.h>
 #include <unordered_map>
 #include <set>
+#include <chrono>
+#include <optional>
 
 enum class EInputKey : int
 {
@@ -147,10 +149,25 @@ enum class EInputAction
     close
 };
 
+struct ActionState
+{
+    bool isActive;
+    std::set<EInputKey> pressedKeys;
+    std::chrono::steady_clock::duration stateDuration;
+};
+
 class InputManager
 {
 private:
-    std::unordered_map<EInputAction, std::set<EInputKey>> m_keyMapping;
+
+    struct ActionInfo
+    {
+        std::set<EInputKey> keySet;
+        bool keyPressed;
+        std::chrono::steady_clock::time_point stateTimePoint;
+    };
+
+    std::unordered_map<EInputAction, ActionInfo> m_keyMapping;
     GLFWwindow *m_pWindow{};
 
 public:
@@ -160,6 +177,9 @@ public:
     void mapActionToKey(EInputAction action, EInputKey key);
 
     bool isKeyPressedForAction(EInputAction action);
+    ActionState getActionState(EInputAction action);
+
+    void tick();
 };
 
 
