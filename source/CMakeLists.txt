@@ -3,7 +3,7 @@ add_subdirectory(input)
 
 set(SOURCES
         main.cpp
-        Logger.cpp Logger.h Application.cpp Application.h Shader.cpp Shader.h input/InputManager.cpp input/InputManager.h Window.cpp Window.h)
+        Logger.cpp Logger.h Application.cpp Application.h Shader.cpp Shader.h Window.cpp Window.h)
 
 add_executable(DeBeer2d ${SOURCES})
 

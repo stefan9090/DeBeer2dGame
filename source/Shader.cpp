@@ -37,7 +37,7 @@ bool Shader::load(std::string_view strVertexPath, std::string_view strFragmentPa
         glDeleteShader(fragmentShader);
     }
 
-    return isOk == 0;
+    return isOk == 1;
 }
 
 bool Shader::compileShader(std::string_view strShaderPath, uint16_t shaderType, unsigned int &rShaderId)

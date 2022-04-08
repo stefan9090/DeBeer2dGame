@@ -13,7 +13,9 @@
 class Application
 {
 private:
+    EventBus m_eventBus;
     Window m_window;
+
 public:
     explicit Application();
     ~Application();

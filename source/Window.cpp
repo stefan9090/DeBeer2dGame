@@ -4,9 +4,9 @@
 
 #include "Window.h"
 
-Window::Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor)
+Window::Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor, EventBus &rEventBus)
     : m_pWindow(glfwCreateWindow(screenWidth, screenHeight, strName.c_str(), pMonitor, nullptr))
-    , m_input(m_pWindow)
+    , m_input(m_pWindow, &rEventBus)
 {
 }
 

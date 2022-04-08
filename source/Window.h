@@ -10,6 +10,7 @@
 #include <glm/glm.hpp>
 
 #include <InputManager.h>
+#include <Event.h>
 
 #include <string>
 
@@ -22,7 +23,7 @@ private:
 public:
     Window() = default;
     Window(const Window &rOther) = delete;
-    Window(int screenWidth, int screenHeight, const std::string& strName, GLFWmonitor *pMonitor);
+    Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor, EventBus &rEventBus);
     virtual ~Window();
 
     Window &operator=(const Window &rOther) = delete;

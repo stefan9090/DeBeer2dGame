@@ -3,15 +3,17 @@
 //
 
 #include "Application.h"
-
 #include "Logger.h"
 #include "entt.hpp"
+#include "Shader.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include "Shader.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 const char *szGlslVersion = "#version 150";
 
@@ -44,7 +46,7 @@ void Application::init()
 
     int screenWidth = 800;
     int screenHeight = 600;
-    m_window = Window(screenWidth, screenHeight, "DeBeer2d", nullptr);
+    m_window = Window(screenWidth, screenHeight, "DeBeer2d", nullptr, m_eventBus);
 
     if (!m_window.getWindow())
     {
@@ -90,7 +92,11 @@ void Application::run()
     {
         glfwPollEvents();
 
-        if (m_window.getInput().isKeyPressedForAction(EInputAction::close))
+        m_window.getInput().tick();
+
+        ActionState closeAction = m_window.getInput().getActionState(EInputAction::close);
+
+        if (closeAction.isActive && (closeAction.stateDuration > seconds(1)))
         {
             m_window.shouldClose(true);
         }
