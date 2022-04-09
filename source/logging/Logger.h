@@ -6,6 +6,7 @@
 #define DEBEER2D_LOGGER_H
 
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 
 #define LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
 #define LOG_WARNING(...) SPDLOG_WARNING(__VA_ARGS__)

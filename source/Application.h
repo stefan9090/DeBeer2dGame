@@ -9,12 +9,14 @@
 //#include <GLFW/glfw3.h>
 
 #include "Window.h"
+#include <ResourceManager.h>
 
 class Application
 {
 private:
     EventBus m_eventBus;
     Window m_window;
+    ResourceManager m_resources;
 
 public:
     explicit Application();

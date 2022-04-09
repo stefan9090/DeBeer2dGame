@@ -5,10 +5,10 @@
 #include "Shader.h"
 
 #include <fstream>
-#include <glad/glad.h>
+#include "glad/glad.h"
 #include <sstream>
 
-#include "Logger.h"
+#include "../logging/Logger.h"
 
 bool Shader::load(std::string_view strVertexPath, std::string_view strFragmentPath)
 {
@@ -49,7 +49,7 @@ bool Shader::compileShader(std::string_view strShaderPath, uint16_t shaderType, 
 
     std::ifstream shaderFile;
     shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    std::string strShaderCode;
+    std::string strShaderSource;
 
     try
     {
@@ -58,20 +58,20 @@ bool Shader::compileShader(std::string_view strShaderPath, uint16_t shaderType, 
         shaderStream << shaderFile.rdbuf();
         shaderFile.close();
 
-        strShaderCode = shaderStream.str();
+        strShaderSource = shaderStream.str();
     } catch (std::ifstream::failure &rError)
     {
         LOG_ERROR("Failed to read shader file: {}", rError.what());
     }
 
-    if (!strShaderCode.empty())
+    if (!strShaderSource.empty())
     {
         // vertex Shader
         rShaderId = glCreateShader(shaderType);
 
         if (rShaderId != 0)
         {
-            const char *szShaderCode = strShaderCode.data();
+            const char *szShaderCode = strShaderSource.data();
 
             glShaderSource(rShaderId, 1, &szShaderCode, nullptr);
             glCompileShader(rShaderId);

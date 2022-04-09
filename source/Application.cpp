@@ -3,9 +3,9 @@
 //
 
 #include "Application.h"
-#include "Logger.h"
+#include "logging/Logger.h"
 #include "entt.hpp"
-#include "Shader.h"
+#include "resource-management/Shader.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -75,10 +75,12 @@ void Application::init()
         throw std::runtime_error("Failed to init Glad");
     }
 
-    Shader spriteShader{};
-    if (!spriteShader.load("sprite.vert", "sprite.frag"))
+    m_resources.loadShader("sprite");
+
+    while (m_resources.isBusy())
     {
-        LOG_ERROR("Failed to load sprite shader");
+        std::this_thread::sleep_for(milliseconds(100));
+        LOG_INFO("Busy");
     }
 
     m_window.getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
@@ -96,7 +98,7 @@ void Application::run()
 
         ActionState closeAction = m_window.getInput().getActionState(EInputAction::close);
 
-        if (closeAction.isActive && (closeAction.stateDuration > seconds(1)))
+        if (closeAction.isActive)
         {
             m_window.shouldClose(true);
         }

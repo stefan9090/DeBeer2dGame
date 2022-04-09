@@ -6,7 +6,7 @@
 #define DEBEER2D_SHADER_H
 
 #include <string>
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 
 class Shader
 {

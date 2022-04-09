@@ -1,15 +1,18 @@
+add_subdirectory(logging)
 add_subdirectory(events)
 add_subdirectory(input)
+add_subdirectory(resource-management)
 
 set(SOURCES
         main.cpp
-        Logger.cpp Logger.h Application.cpp Application.h Shader.cpp Shader.h Window.cpp Window.h)
+        Application.cpp Application.h Window.cpp Window.h)
 
 add_executable(DeBeer2d ${SOURCES})
 
 # Own libs
 target_link_libraries(DeBeer2d EventSystem)
 target_link_libraries(DeBeer2d InputSystem)
+target_link_libraries(DeBeer2d ResourceManagement)
 
 # External libs
 target_link_libraries(DeBeer2d spdlog)
