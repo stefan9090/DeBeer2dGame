@@ -4,6 +4,8 @@
 
 #include "Window.h"
 
+#include <glm/ext.hpp>
+
 Window::Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor, EventBus &rEventBus)
     : m_pWindow(glfwCreateWindow(screenWidth, screenHeight, strName.c_str(), pMonitor, nullptr))
     , m_input(m_pWindow, &rEventBus)
@@ -72,3 +74,8 @@ void Window::swapBuffers()
         glfwSwapBuffers(m_pWindow);
     }
 }
+
+//void Window::render(const SpriteRenderer &rRenderer)
+//{
+//
+//}

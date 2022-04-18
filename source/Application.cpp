@@ -5,13 +5,16 @@
 #include "Application.h"
 #include "logging/Logger.h"
 #include "entt.hpp"
-#include "resource-management/Shader.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include <Texture.h>
+
 #include <chrono>
+
+#include <entt.hpp>
 
 using namespace std::chrono;
 
@@ -83,12 +86,23 @@ void Application::init()
         LOG_INFO("Busy");
     }
 
+    m_renderer.init(m_resources, screenWidth, screenHeight);
+
     m_window.getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
+
+
 }
 
 void Application::run()
 {
     ImVec4 clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
+
+    auto pTex = std::make_shared<Texture>();
+    pTex->load(TEXTURES_LOCATION"test.jpg");
+
+    Scene scene;
+
+    scene.addSprite(pTex, {10, 10}, {100, 100}, 0.f, {0, 0, 0});
 
     while (!m_window.shouldClose())
     {
@@ -122,6 +136,9 @@ void Application::run()
         glViewport(0, 0, displaySize.x, displaySize.y);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        m_renderer.drawScene(scene);
+
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         m_window.swapBuffers();

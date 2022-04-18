@@ -10,6 +10,7 @@
 
 #include "Window.h"
 #include <ResourceManager.h>
+#include <SpriteRenderer.h>
 
 class Application
 {
@@ -17,6 +18,7 @@ private:
     EventBus m_eventBus;
     Window m_window;
     ResourceManager m_resources;
+    SpriteRenderer m_renderer;
 
 public:
     explicit Application();

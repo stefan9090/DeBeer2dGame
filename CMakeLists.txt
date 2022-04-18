@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_compile_definitions(RESOURCES_LOCATION="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
 add_compile_definitions(SHADERS_LOCATION="${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders/")
+add_compile_definitions(TEXTURES_LOCATION="${CMAKE_CURRENT_SOURCE_DIR}/resources/textures/")
 
 add_subdirectory(external)
 add_subdirectory(source)

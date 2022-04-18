@@ -46,7 +46,7 @@ public:
     virtual ~ResourceManager();
     void loadShader(const std::string& strShaderName);
 
-    std::shared_ptr<Shader> getShader(const std::string &rStrPath);
+    std::shared_ptr<Shader> getShader(const std::string &rStrPath) const;
 
     bool isBusy();
 

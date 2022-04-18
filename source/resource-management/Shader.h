@@ -25,8 +25,8 @@ public:
     void setVec4(std::string_view strName, glm::vec4 value);
 
     void setMat2(std::string_view strName, glm::mat2 value);
-    void setMat3(std::string_view strName, glm::mat2 value);
-    void setMat4(std::string_view strName, glm::mat2 value);
+    void setMat3(std::string_view strName, glm::mat3 value);
+    void setMat4(std::string_view strName, glm::mat4 value);
 
 private:
     static bool compileShader(std::string_view strShaderPath, uint16_t shaderType, unsigned int &rShaderId);

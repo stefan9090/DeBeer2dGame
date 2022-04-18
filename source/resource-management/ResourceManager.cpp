@@ -102,7 +102,7 @@ bool ResourceManager::isBusy()
     return !m_workQueue.empty() && !threadIsActive;
 }
 
-std::shared_ptr<Shader> ResourceManager::getShader(const std::string &rStrPath)
+std::shared_ptr<Shader> ResourceManager::getShader(const std::string &rStrPath) const
 {
     auto shaderIt = m_shaders.find(rStrPath);
     return (shaderIt != m_shaders.end()) ? shaderIt->second : nullptr;

@@ -11,6 +11,7 @@
 
 #include <InputManager.h>
 #include <Event.h>
+#include <SpriteRenderer.h>
 
 #include <string>
 
@@ -37,6 +38,8 @@ public:
     void makeContextCurrent();
     glm::vec<2, int> getFrameBufferSize();
     void swapBuffers();
+
+//    void render(const SpriteRenderer &rRenderer)
 };
 
 
