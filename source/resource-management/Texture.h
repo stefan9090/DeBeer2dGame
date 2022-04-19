@@ -11,8 +11,14 @@ class Texture
 {
 private:
     unsigned int m_texture;
+
+    unsigned char *pData;
+    int m_width;
+    int m_height;
+    int m_nrChannels;
 public:
     bool load(std::string_view strPath);
+    bool init();
     void use() const;
 };
 

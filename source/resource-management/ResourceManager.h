@@ -16,6 +16,7 @@
 #include <memory>
 
 #include <Shader.h>
+#include <Texture.h>
 
 class ResourceManager
 {
@@ -35,18 +36,24 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Shader>> m_shaders;
     std::mutex m_shaderMutex;
 
+    std::unordered_map<std::string, std::shared_ptr<Texture>> m_textures;
+    std::mutex m_texturesMutex;
+
     std::mutex m_workQMutex;
     std::condition_variable m_isWorkAvailable;
     std::queue<std::function<void()>> m_workQueue;
-    std::vector<WorkerThread> m_threadPool;
+    std::vector<std::unique_ptr<WorkerThread>> m_threadPool;
     std::atomic_bool m_terminate = false;
 
 public:
     ResourceManager();
     virtual ~ResourceManager();
     void loadShader(const std::string& strShaderName);
+    void loadTexture(const std::string& strTextureName);
 
     std::shared_ptr<Shader> getShader(const std::string &rStrPath) const;
+    std::shared_ptr<Texture> getTexture(const std::string &rStrPath) const;
+    void initTextures();
 
     bool isBusy();
 

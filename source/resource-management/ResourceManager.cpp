@@ -12,10 +12,10 @@ ResourceManager::ResourceManager()
 
     for (int i = 0; i < std::thread::hardware_concurrency(); i++)
     {
-        WorkerThread worker;
-        worker.worker = std::thread(workerFunc, std::ref(worker.isBusy));
+        auto worker = std::make_unique<WorkerThread>();
+        worker->worker = std::thread(workerFunc, std::ref(worker->isBusy));
 
-        LOG_INFO("Added a worker thread: {}", worker.worker.get_id());
+        LOG_INFO("Added a worker thread: {}", worker->worker.get_id());
         m_threadPool.emplace_back(std::move(worker));
     }
 }
@@ -24,9 +24,9 @@ ResourceManager::~ResourceManager()
 {
     m_terminate = true;
     m_isWorkAvailable.notify_all();
-    for (WorkerThread &rWorker : m_threadPool)
+    for (auto &pWorker : m_threadPool)
     {
-        rWorker.worker.join();
+        pWorker->worker.join();
     }
 }
 
@@ -89,21 +89,55 @@ void ResourceManager::loadShader(const std::string& strShaderName)
 
 bool ResourceManager::isBusy()
 {
-    bool threadIsActive = false;
-    for (WorkerThread &rThread : m_threadPool)
+    bool isActive = false;
+    for (auto &pThread : m_threadPool)
     {
-        if (rThread.isBusy)
+        if (pThread->isBusy)
         {
-            threadIsActive = true;
+            isActive = true;
             break;
         }
     }
 
-    return !m_workQueue.empty() && !threadIsActive;
+    return !m_workQueue.empty() || isActive;
 }
 
 std::shared_ptr<Shader> ResourceManager::getShader(const std::string &rStrPath) const
 {
     auto shaderIt = m_shaders.find(rStrPath);
     return (shaderIt != m_shaders.end()) ? shaderIt->second : nullptr;
+}
+
+void ResourceManager::loadTexture(const std::string &strTextureName)
+{
+        auto workFunc = [=]() {
+            auto pTexture = std::make_shared<Texture>();
+            LOG_INFO("Loading texture {}", strTextureName);
+            if (pTexture->load(std::string{TEXTURES_LOCATION} + strTextureName))
+            {
+                LOG_INFO("Loaded texture: {}", strTextureName);
+                std::unique_lock<std::mutex> lock(m_texturesMutex);
+                this->m_textures[strTextureName] = pTexture;
+            }
+        };
+
+        // Queue the work
+        m_workQueue.push(workFunc);
+
+        // Notify to the thread pool that there is work available
+        m_isWorkAvailable.notify_one();
+}
+
+std::shared_ptr<Texture> ResourceManager::getTexture(const std::string &rStrPath) const
+{
+    auto textureIt = m_textures.find(rStrPath);
+    return (textureIt != m_textures.end()) ? textureIt->second : nullptr;
+}
+
+void ResourceManager::initTextures()
+{
+    for (const auto& texture : m_textures)
+    {
+        texture.second->init();
+    }
 }

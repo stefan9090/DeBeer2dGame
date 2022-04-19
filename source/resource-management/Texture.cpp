@@ -10,29 +10,31 @@
 
 bool Texture::load(std::string_view strPath)
 {
-    bool success = false;
-
-    int width;
-    int height;
-    int nrChannels;
-    unsigned char *pData = stbi_load(strPath.data(), &width, &height, &nrChannels, 0);
-    if (pData)
+    pData = stbi_load(strPath.data(), &m_width, &m_height, &m_nrChannels, 0);
+    if (!pData)
     {
-        glGenTextures(1, &m_texture);
-
-        this->use();
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        success = true;
+        stbi_image_free(pData);
     }
 
-    // Free data even if we failed to load it
-    stbi_image_free(pData);
+    return (pData != nullptr);
+}
 
+bool Texture::init()
+{
+    glGenTextures(1, &m_texture);
 
-    return success;
+    if (m_texture != 0)
+    {
+        this->use();
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        // Free data even if we failed to load it
+        stbi_image_free(pData);
+    }
+
+    return (m_texture != 0);
 }
 
 void Texture::use() const

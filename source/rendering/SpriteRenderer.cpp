@@ -4,13 +4,13 @@
 
 #include "SpriteRenderer.h"
 
-#include <glad/glad.h> // must be included before GLFW/glfw3.h
 #include "glm/ext.hpp"
+#include <glad/glad.h>// must be included before GLFW/glfw3.h
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <Logger.h>
 #include <Components.h>
+#include <Logger.h>
 
 #include <entt.hpp>
 
@@ -33,8 +33,8 @@ void SpriteRenderer::init(const ResourceManager &rResources, int screenWidth, in
 
 void SpriteRenderer::drawScene(const Scene &rScene)
 {
-    rScene.getNative().view<Position, Renderable>().each([&] (const Position &rPos, const Renderable &rRen) {
-       this->drawSprite(rRen.pTexture, rPos.pos, rPos.size, 0.f, {});
+    rScene.getNative().view<Position, Renderable>().each([&](const Position &rPos, const Renderable &rRen) {
+        this->drawSprite(rRen.pTexture, rPos.pos, rPos.size, 0.f, {});
     });
 }
 
@@ -80,8 +80,7 @@ void SpriteRenderer::initRenderData()
 
             0.0f, 1.0f, 0.0f, 1.0f,
             1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 0.0f, 1.0f, 0.0f
-    };
+            1.0f, 0.0f, 1.0f, 0.0f};
 
     glGenVertexArrays(1, &m_quadVAO);
     glGenBuffers(1, &VBO);
@@ -91,7 +90,7 @@ void SpriteRenderer::initRenderData()
 
     glBindVertexArray(m_quadVAO);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }

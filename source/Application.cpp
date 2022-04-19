@@ -79,12 +79,14 @@ void Application::init()
     }
 
     m_resources.loadShader("sprite");
+    m_resources.loadTexture("test.jpg");
 
     while (m_resources.isBusy())
     {
-        std::this_thread::sleep_for(milliseconds(100));
-        LOG_INFO("Busy");
+        std::this_thread::sleep_for(milliseconds(10));
     }
+
+    m_resources.initTextures();
 
     m_renderer.init(m_resources, screenWidth, screenHeight);
 
@@ -97,12 +99,13 @@ void Application::run()
 {
     ImVec4 clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
 
-    auto pTex = std::make_shared<Texture>();
-    pTex->load(TEXTURES_LOCATION"test.jpg");
+//    auto pTex = std::make_shared<Texture>();
+//    pTex->load(TEXTURES_LOCATION"test.jpg");
 
     Scene scene;
 
-    scene.addSprite(pTex, {10, 10}, {100, 100}, 0.f, {0, 0, 0});
+    scene.addSprite(m_resources.getTexture("test.jpg"), {10, 10}, {100, 100}, 0.f, {0, 0, 0});
+    scene.addSprite(m_resources.getTexture("test.jpg"), {100, 100}, {100, 100}, 0.f, {0, 0, 0});
 
     while (!m_window.shouldClose())
     {

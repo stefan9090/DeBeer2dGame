@@ -17,7 +17,7 @@ private:
     entt::registry m_registry;
 
 public:
-    void addSprite(std::shared_ptr<Texture> rTexture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
+    void addSprite(std::shared_ptr<Texture> pTexture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
 
     const entt::registry &getNative() const;
 };
