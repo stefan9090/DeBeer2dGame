@@ -49,7 +49,7 @@ public:
     ResourceManager();
     virtual ~ResourceManager();
     void loadShader(const std::string& strShaderName);
-    void loadTexture(const std::string& strTextureName);
+    void loadTexture(std::string_view strTexturePath);
 
     std::shared_ptr<Shader> getShader(const std::string &rStrPath) const;
     std::shared_ptr<Texture> getTexture(const std::string &rStrPath) const;

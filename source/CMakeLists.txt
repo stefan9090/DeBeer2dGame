@@ -6,10 +6,11 @@ add_subdirectory(rendering)
 add_subdirectory(scene)
 
 set(SOURCES
-        main.cpp
-        Application.cpp Application.h Window.cpp Window.h)
+        Application.cpp Application.h Window.cpp Window.h Layer.cpp Layer.h LayerStack.cpp LayerStack.h DeBeer2d.h)
 
-add_executable(DeBeer2d ${SOURCES})
+add_library(DeBeer2d ${SOURCES})
+
+target_include_directories(DeBeer2d PUBLIC .)
 
 # Own libs
 target_link_libraries(DeBeer2d EventSystem)

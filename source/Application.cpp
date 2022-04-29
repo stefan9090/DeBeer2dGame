@@ -3,8 +3,8 @@
 //
 
 #include "Application.h"
-#include "logging/Logger.h"
 #include "entt.hpp"
+#include "logging/Logger.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -20,101 +20,77 @@ using namespace std::chrono;
 
 const char *szGlslVersion = "#version 150";
 
-Application::Application()
+namespace DeBeer2d
 {
-}
-
-Application::~Application()
-{
-    // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    LOG_INFO("exiting");
-}
-
-void Application::init()
-{
-    // Init glfw
-    if (!glfwInit())
+    Application::Application()
     {
-        throw std::runtime_error("Failed to init GLFW");
-    }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        // Init glfw
+        if (!glfwInit())
+        {
+            throw std::runtime_error("Failed to init GLFW");
+        }
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    glfwSetErrorCallback(glfwErrorCallback);
+        glfwSetErrorCallback(glfwErrorCallback);
 
-    int screenWidth = 800;
-    int screenHeight = 600;
-    m_window = Window(screenWidth, screenHeight, "DeBeer2d", nullptr, m_eventBus);
+        int screenWidth = 800;
+        int screenHeight = 600;
+        m_window = Window(screenWidth, screenHeight, "DeBeer2d", nullptr, m_eventBus);
 
-    if (!m_window.getWindow())
-    {
-        throw std::runtime_error("Failed to creat glfw window");
-    }
+        if (!m_window.getWindow())
+        {
+            throw std::runtime_error("Failed to creat glfw window");
+        }
 
-    m_window.makeContextCurrent();
+        m_window.makeContextCurrent();
 
-    glfwSwapInterval(1);// Enable vsync
+        glfwSwapInterval(1);// Enable vsync
 
-    // Init imgui
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+        // Init imgui
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
 
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
 
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(m_window.getWindow(), true);
-    ImGui_ImplOpenGL3_Init(szGlslVersion);
+        // Setup Platform/Renderer backends
+        ImGui_ImplGlfw_InitForOpenGL(m_window.getWindow(), true);
+        ImGui_ImplOpenGL3_Init(szGlslVersion);
 
-    // Init glad
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-    {
-        throw std::runtime_error("Failed to init Glad");
+        // Init glad
+        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+        {
+            throw std::runtime_error("Failed to init Glad");
+        }
+
+        m_resources.loadShader("sprite");
+        m_renderer.init(m_resources, screenWidth, screenHeight);
+
+        m_window.getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
     }
 
-    m_resources.loadShader("sprite");
-    m_resources.loadTexture("test.jpg");
-
-    while (m_resources.isBusy())
+    Application::~Application()
     {
-        std::this_thread::sleep_for(milliseconds(10));
+        // Cleanup
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+
+        LOG_INFO("exiting");
     }
 
-    m_resources.initTextures();
-
-    m_renderer.init(m_resources, screenWidth, screenHeight);
-
-    m_window.getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
-
-
-}
-
-void Application::run()
-{
-    ImVec4 clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
-
-//    auto pTex = std::make_shared<Texture>();
-//    pTex->load(TEXTURES_LOCATION"test.jpg");
-
-    Scene scene;
-
-    scene.addSprite(m_resources.getTexture("test.jpg"), {10, 10}, {100, 100}, 0.f, {0, 0, 0});
-    scene.addSprite(m_resources.getTexture("test.jpg"), {100, 100}, {100, 100}, 0.f, {0, 0, 0});
-
-    while (!m_window.shouldClose())
+    void Application::updateApp()
     {
+        ImVec4 clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
+
         glfwPollEvents();
 
         m_window.getInput().tick();
 
         ActionState closeAction = m_window.getInput().getActionState(EInputAction::close);
-
         if (closeAction.isActive)
         {
             m_window.shouldClose(true);
@@ -140,15 +116,31 @@ void Application::run()
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        m_renderer.drawScene(scene);
+        m_renderer.drawScene(m_scene);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         m_window.swapBuffers();
     }
-}
 
-void Application::glfwErrorCallback(int error, const char *description)
-{
-    LOG_ERROR("Glfw Error {}: {}", error, description);
-}
+    void Application::glfwErrorCallback(int error, const char *description)
+    {
+        LOG_ERROR("Glfw Error {}: {}", error, description);
+    }
+
+
+    void Application::loadTexture(std::string_view szPath)
+    {
+        m_resources.loadTexture(szPath);
+    }
+
+    void Application::initTextures()
+    {
+        m_resources.initTextures();
+    }
+
+    bool Application::shouldClose()
+    {
+        return m_window.shouldClose();
+    }
+}// namespace DeBeer2d

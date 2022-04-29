@@ -12,24 +12,32 @@
 #include <ResourceManager.h>
 #include <SpriteRenderer.h>
 
-class Application
+namespace DeBeer2d
 {
-private:
-    EventBus m_eventBus;
-    Window m_window;
-    ResourceManager m_resources;
-    SpriteRenderer m_renderer;
+    class Application
+    {
+    private:
+        EventBus m_eventBus;
+        Window m_window;
+        ResourceManager m_resources;
+        SpriteRenderer m_renderer;
+        Scene m_scene;
 
-public:
-    explicit Application();
-    ~Application();
+    protected:
+        void loadTexture(std::string_view szPath);
+        void initTextures();
 
-    void init();
-    void run();
+        bool shouldClose();
 
-private:
-    static void glfwErrorCallback(int error, const char *description);
-};
+    public:
+        explicit Application();
+        ~Application();
 
+        void updateApp();
 
-#endif //DEBEER2D_APPLICATION_H
+    private:
+        static void glfwErrorCallback(int error, const char *description);
+    };
+}
+
+#endif//DEBEER2D_APPLICATION_H

@@ -67,26 +67,6 @@ void ResourceManager::loadShader(const std::string& strShaderName)
     }
 }
 
-//void ResourceManager::loadShader(const std::string& strShaderName)
-//{
-//    auto workFunc = [=]() {
-//        Shader shader{};
-//        LOG_INFO("Loading shader {}", strShaderName);
-//        if (shader.load(strShaderName + ".vert", strShaderName + ".frag"))
-//        {
-//            LOG_INFO("Loaded shader: {}", strShaderName);
-//            std::unique_lock<std::mutex> lock(m_shaderMutex);
-//            this->m_shaders[strShaderName] = shader;
-//        }
-//    };
-//
-//    // Queue the work
-//    m_workQueue.push(workFunc);
-//
-//    // Notify to the thread pool that there is work available
-//    m_isWorkAvailable.notify_one();
-//}
-
 bool ResourceManager::isBusy()
 {
     bool isActive = false;
@@ -108,16 +88,17 @@ std::shared_ptr<Shader> ResourceManager::getShader(const std::string &rStrPath) 
     return (shaderIt != m_shaders.end()) ? shaderIt->second : nullptr;
 }
 
-void ResourceManager::loadTexture(const std::string &strTextureName)
+void ResourceManager::loadTexture(std::string_view strTexturePath)
 {
+    std::string strTexturePathCopy{strTexturePath};
         auto workFunc = [=]() {
             auto pTexture = std::make_shared<Texture>();
-            LOG_INFO("Loading texture {}", strTextureName);
-            if (pTexture->load(std::string{TEXTURES_LOCATION} + strTextureName))
+            LOG_INFO("Loading texture {}", strTexturePathCopy);
+            if (pTexture->load(strTexturePathCopy))
             {
-                LOG_INFO("Loaded texture: {}", strTextureName);
+                LOG_INFO("Loaded texture: {}", strTexturePathCopy);
                 std::unique_lock<std::mutex> lock(m_texturesMutex);
-                this->m_textures[strTextureName] = pTexture;
+                this->m_textures[strTexturePathCopy] = pTexture;
             }
         };
 
