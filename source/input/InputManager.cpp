@@ -6,9 +6,8 @@
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-InputManager::InputManager(GLFWwindow *pWindow, EventBus *pEventBus)
+InputManager::InputManager(GLFWwindow *pWindow)
     : m_pWindow{pWindow}
-    , m_pEventBus{pEventBus}
 {
 }
 
@@ -71,15 +70,6 @@ void InputManager::tick()
         {
             rActionInfo.stateTimePoint = steady_clock::now();
             rActionInfo.keyPressed = isPressed;
-        }
-
-        if (m_pEventBus)
-        {
-            ActionState state;
-            state.isActive = rActionInfo.keyPressed;
-            state.stateDuration = steady_clock::now() - rActionInfo.stateTimePoint;
-
-            m_pEventBus->triggerNow<ActionState>(state);
         }
     }
 }

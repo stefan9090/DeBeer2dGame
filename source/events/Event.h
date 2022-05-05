@@ -5,47 +5,111 @@
 #ifndef DEBEER2D_EVENT_H
 #define DEBEER2D_EVENT_H
 
-#include <entt.hpp>
+#include "FamilyType.h"
+#include "EventClass.h"
+
 #include <cstdint>
+#include <entt.hpp>
+#include <any>
 
-class EventBus
+namespace Beer
 {
-private:
-    entt::dispatcher m_dispatcher{};
+    using EventID = internal::FamilyID;
 
-public:
-    void update();
-
-    template<typename EventType, auto CallBackType, typename InstanceType>
-    void listenTo(const InstanceType &&rInstance ...)
+    namespace internal
     {
-        m_dispatcher.sink<EventType>().template connect<CallBackType>(rInstance);
-    }
+        class FunctionWrapper
+        {
+            std::any m_func;
+
+        public:
+            FunctionWrapper() = default;
+
+            template<typename Arg>
+            explicit FunctionWrapper(std::function<bool(const Arg&)> func)
+                : m_func(func)
+            {}
+
+            template<typename Arg>
+            void wrapFunction(std::function<bool(const Arg&)> func)
+            {
+                m_func = func;
+            }
+
+            template<typename Arg>
+            bool operator()(const Arg &rArg)
+            {
+                return std::invoke(std::any_cast<std::function<bool(const Arg&)>>(m_func), rArg);
+            }
+        };
+
+        class IEvent
+        {
+            virtual FamilyID getEventID() = 0;
+        };
+
+        using EventFamily = internal::Family<internal::IEvent>;
+
+
+
+        class EventEndPoint
+        {
+            std::unordered_map<EventID, internal::FunctionWrapper> subscribers;
+
+        public:
+            template<typename EventType, typename SystemType>
+            void subscribeTo(SystemType &receiver)
+            {
+
+                auto func = [&receiver](const EventType &rEvent) -> bool {
+                    return receiver.receive(rEvent);
+                };
+
+                internal::FunctionWrapper callback;
+                callback.wrapFunction<EventType>(func);
+
+                subscribers[EventType::getStaticEventID()] = callback;
+
+//                auto search = subscribers.find(EventType::getStaticEventID());
+//                if (search == subscribers.end())
+//                {
+//                    subscribers[EventType::getStaticEventID()] = std::unordered_map<EventClassID, internal::FunctionWrapper>();
+//                }
+//                subscribers[EventType::getStaticEventID()].insert({SystemType::getStaticSystemID(), callback});
+            }
+
+            template<typename EventType, typename Receiver>
+            void unsubscribeFrom(Receiver &receiver)
+            {
+                auto search = subscribers.find(EventType::getStaticEventID());
+                if (search != subscribers.end())
+                {
+                    subscribers[EventType::getStaticEventID()].erase(Receiver::getStaticSystemID());
+                }
+            }
+
+            template<typename EventType>
+            bool publishEvent(EventType &rEvent)
+            {
+                return subscribers[EventType::getStaticEventID()](rEvent);
+            }
+        };
+    }// namespace internal
 
     template<typename EventType>
-    void triggerNow()
+    class Event : public internal::IEvent
     {
-        m_dispatcher.trigger<EventType>();
-    }
+    public:
+        static const EventID getStaticEventID()
+        {
+            return internal::EventFamily::type<EventType>;
+        }
 
-    template<typename EventType, typename T>
-    void triggerNow(const T &rVars ...)
-    {
-        m_dispatcher.trigger<EventType>(rVars);
-    }
+        EventID getEventID() override
+        {
+            return internal::EventFamily::type<EventType>;
+        }
+    };
+}// namespace Beer
 
-    template<typename EventType>
-    void triggerLater()
-    {
-        m_dispatcher.enqueue<EventType>();
-    }
-
-    template<typename EventType, typename T>
-    void triggerLater(const T &rVars ...)
-    {
-        m_dispatcher.enqueue<EventType>(rVars);
-    }
-
-};
-
-#endif //DEBEER2D_EVENT_H
+#endif//DEBEER2D_EVENT_H

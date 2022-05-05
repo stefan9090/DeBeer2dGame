@@ -4,11 +4,14 @@
 
 #include "Layer.h"
 
-Layer::Layer(EventBus &rEventBus)
-    : m_rEventBus(rEventBus)
-{
-}
-
-Layer::~Layer()
-{
-}
+//namespace Beer
+//{
+//    Layer::Layer(internal::EventEndPoint &rEventBus)
+//        : m_rEventBus(rEventBus)
+//    {
+//    }
+//
+//    Layer::~Layer()
+//    {
+//    }
+//}// namespace Beer

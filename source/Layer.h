@@ -8,20 +8,43 @@
 #include <string>
 
 #include <Event.h>
+#include <EventClass.h>
 
-class Layer
+namespace Beer
 {
-protected:
-    EventBus &m_rEventBus;
+    template<typename LayerType>
+    class Layer : public internal::EventClass<LayerType>
+    {
+    protected:
+        internal::EventEndPoint *m_pEventBus{};
 
-public:
-    explicit Layer(EventBus &rEventBus);
-    virtual ~Layer();
+    public:
+        virtual ~Layer() = default;
 
-    virtual void onAttach() {}
-    virtual void onDetach() {}
-    virtual void onUpdate() {}
-};
+        virtual void onAttach() {}
+        virtual void onDetach() {}
+        virtual void onUpdate() {}
 
+        void setEventBus(internal::EventEndPoint *pEventBus) { m_pEventBus = pEventBus; }
+
+    protected:
+
+        template<typename EventType, typename EventClassType>
+        void subscribeTo(EventClassType &rReceiver)
+        {
+            assert(m_pEventBus);
+            m_pEventBus->template subscribeTo<EventType>(rReceiver);
+        }
+
+        template<typename EventType, typename Receiver>
+        void unsubscribeFrom(Receiver &rReceiver)
+        {
+            assert(m_pEventBus);
+            m_pEventBus->template unsubscribeFrom<EventType>(rReceiver);
+        }
+    };
+
+
+}// namespace Beer
 
 #endif//DEBEER2D_LAYER_H

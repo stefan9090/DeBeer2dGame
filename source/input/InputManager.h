@@ -171,11 +171,10 @@ private:
 
     std::unordered_map<EInputAction, ActionInfo> m_keyMapping;
     GLFWwindow *m_pWindow{};
-    EventBus *m_pEventBus{};
 
 public:
     InputManager() = default;
-    InputManager(GLFWwindow *pWindow, EventBus *pEventBus);
+    InputManager(GLFWwindow *pWindow);
 
     void mapActionToKey(EInputAction action, EInputKey key);
 

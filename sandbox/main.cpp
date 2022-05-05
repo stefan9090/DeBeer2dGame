@@ -4,7 +4,7 @@
 
 #include <DeBeer2d.h>
 
-class Game : public DeBeer2d::Application
+class Game : public Beer::Application
 {
 private:
     std::string strTexturePath = "/home/stefan/Documents/code/DeBeer2dGame/resources/textures";
@@ -14,14 +14,6 @@ public:
         loadTexture(strTexturePath + "test.jpg");
 
         initTextures();
-    }
-
-    void run()
-    {
-        while (!shouldClose())
-        {
-            updateApp();
-        }
     }
 };
 

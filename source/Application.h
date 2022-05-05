@@ -11,13 +11,17 @@
 #include "Window.h"
 #include <ResourceManager.h>
 #include <SpriteRenderer.h>
+#include <EventManager.h>
+#include <Event.h>
+#include "CoreEvents.h"
 
-namespace DeBeer2d
+namespace Beer
 {
-    class Application
+    class Application : private internal::EventClass<Application>
     {
     private:
-        EventBus m_eventBus;
+        internal::EventManager m_eventManager;
+        internal::EventEndPoint m_eventBus;
         Window m_window;
         ResourceManager m_resources;
         SpriteRenderer m_renderer;
@@ -27,13 +31,13 @@ namespace DeBeer2d
         void loadTexture(std::string_view szPath);
         void initTextures();
 
-        bool shouldClose();
-
     public:
         explicit Application();
         ~Application();
 
-        void updateApp();
+        void run();
+
+        bool receive(const WindowResizeEvent &rEvent);
 
     private:
         static void glfwErrorCallback(int error, const char *description);

@@ -3,8 +3,3 @@
 //
 
 #include "Event.h"
-
-void EventBus::update()
-{
-    m_dispatcher.update();
-}

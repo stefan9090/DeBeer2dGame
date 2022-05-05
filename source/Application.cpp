@@ -3,24 +3,23 @@
 //
 
 #include "Application.h"
-#include "entt.hpp"
-#include "logging/Logger.h"
+#include <entt.hpp>
+#include <entt.hpp>
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
-#include <Texture.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 #include <chrono>
 
-#include <entt.hpp>
+#include <Logger.h>
+#include <Texture.h>
 
 using namespace std::chrono;
 
 const char *szGlslVersion = "#version 150";
 
-namespace DeBeer2d
+namespace Beer
 {
     Application::Application()
     {
@@ -37,7 +36,7 @@ namespace DeBeer2d
 
         int screenWidth = 800;
         int screenHeight = 600;
-        m_window = Window(screenWidth, screenHeight, "DeBeer2d", nullptr, m_eventBus);
+        m_window = Window(screenWidth, screenHeight, "DeBeer2d", nullptr);
 
         if (!m_window.getWindow())
         {
@@ -70,6 +69,12 @@ namespace DeBeer2d
         m_renderer.init(m_resources, screenWidth, screenHeight);
 
         m_window.getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
+
+        m_eventBus.subscribeTo<WindowResizeEvent>(*this);
+        m_eventManager.pushBack(&m_eventBus);
+
+        WindowResizeEvent event;
+        m_eventManager.publishEvent<WindowResizeEvent>(event);
     }
 
     Application::~Application()
@@ -82,45 +87,48 @@ namespace DeBeer2d
         LOG_INFO("exiting");
     }
 
-    void Application::updateApp()
+    void Application::run()
     {
         ImVec4 clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
 
-        glfwPollEvents();
-
-        m_window.getInput().tick();
-
-        ActionState closeAction = m_window.getInput().getActionState(EInputAction::close);
-        if (closeAction.isActive)
+        while (!m_window.shouldClose())
         {
-            m_window.shouldClose(true);
+            glfwPollEvents();
+
+            m_window.getInput().tick();
+
+            ActionState closeAction = m_window.getInput().getActionState(EInputAction::close);
+            if (closeAction.isActive)
+            {
+                m_window.shouldClose(true);
+            }
+
+            // Start the Dear ImGui frame
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            {// Show stats window
+                ImGui::SetNextWindowSize(ImVec2{100, 50}, true);
+                ImGui::Begin("stats:");
+
+                ImGui::Text("fps: %.1f", ImGui::GetIO().Framerate);
+                ImGui::End();
+            }
+
+            // Rendering
+            ImGui::Render();
+            auto displaySize = m_window.getFrameBufferSize();
+            glViewport(0, 0, displaySize.x, displaySize.y);
+            glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            m_renderer.drawScene(m_scene);
+
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            m_window.swapBuffers();
         }
-
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        {// Show stats window
-            ImGui::SetNextWindowSize(ImVec2{100, 50}, true);
-            ImGui::Begin("stats:");
-
-            ImGui::Text("fps: %.1f", ImGui::GetIO().Framerate);
-            ImGui::End();
-        }
-
-        // Rendering
-        ImGui::Render();
-        auto displaySize = m_window.getFrameBufferSize();
-        glViewport(0, 0, displaySize.x, displaySize.y);
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        m_renderer.drawScene(m_scene);
-
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        m_window.swapBuffers();
     }
 
     void Application::glfwErrorCallback(int error, const char *description)
@@ -139,8 +147,9 @@ namespace DeBeer2d
         m_resources.initTextures();
     }
 
-    bool Application::shouldClose()
+    bool Application::receive(const WindowResizeEvent &rEvent)
     {
-        return m_window.shouldClose();
+        LOG_INFO("Received");
+        return true;
     }
 }// namespace DeBeer2d

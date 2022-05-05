@@ -24,7 +24,7 @@ private:
 public:
     Window() = default;
     Window(const Window &rOther) = delete;
-    Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor, EventBus &rEventBus);
+    Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor);
     virtual ~Window();
 
     Window &operator=(const Window &rOther) = delete;

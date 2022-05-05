@@ -1,5 +1,5 @@
 set(SOURCES
-        Event.cpp)
+        Event.cpp EventClass.h FamilyType.h EventManager.cpp EventManager.h)
 
 add_library(EventSystem ${SOURCES})
 

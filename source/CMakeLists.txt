@@ -6,7 +6,7 @@ add_subdirectory(rendering)
 add_subdirectory(scene)
 
 set(SOURCES
-        Application.cpp Application.h Window.cpp Window.h Layer.cpp Layer.h LayerStack.cpp LayerStack.h DeBeer2d.h)
+        Application.cpp Application.h Window.cpp Window.h Layer.cpp Layer.h LayerStack.cpp LayerStack.h DeBeer2d.h CoreEvents.h)
 
 add_library(DeBeer2d ${SOURCES})
 
