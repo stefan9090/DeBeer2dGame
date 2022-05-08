@@ -10,11 +10,15 @@
 
 namespace Beer
 {
+    struct WindowCloseEvent : public Event<WindowCloseEvent>
+    {
+        int hi{};
+    };
+
     struct WindowResizeEvent : public Event<WindowResizeEvent>
     {
-    public:
-        int newX;
-        int newY;
+        int newX{};
+        int newY{};
     };
 }
 

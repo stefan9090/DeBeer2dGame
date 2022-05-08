@@ -4,20 +4,11 @@
 
 #include "Application.h"
 #include <entt.hpp>
-#include <entt.hpp>
-
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
-#include <chrono>
 
 #include <Logger.h>
 #include <Texture.h>
 
 using namespace std::chrono;
-
-const char *szGlslVersion = "#version 150";
 
 namespace Beer
 {
@@ -36,28 +27,16 @@ namespace Beer
 
         int screenWidth = 800;
         int screenHeight = 600;
-        m_window = Window(screenWidth, screenHeight, "DeBeer2d", nullptr);
+        m_pWindow = std::make_unique<internal::Window>(screenWidth, screenHeight, "DeBeer2d", nullptr, m_eventManager);
 
-        if (!m_window.getWindow())
+        if (!m_pWindow->getWindow())
         {
             throw std::runtime_error("Failed to creat glfw window");
         }
 
-        m_window.makeContextCurrent();
+        m_pWindow->makeContextCurrent();
 
         glfwSwapInterval(1);// Enable vsync
-
-        // Init imgui
-        // Setup Dear ImGui context
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-
-        // Setup Dear ImGui style
-        ImGui::StyleColorsDark();
-
-        // Setup Platform/Renderer backends
-        ImGui_ImplGlfw_InitForOpenGL(m_window.getWindow(), true);
-        ImGui_ImplOpenGL3_Init(szGlslVersion);
 
         // Init glad
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
@@ -68,66 +47,36 @@ namespace Beer
         m_resources.loadShader("sprite");
         m_renderer.init(m_resources, screenWidth, screenHeight);
 
-        m_window.getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
+        m_pWindow->getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
 
-        m_eventBus.subscribeTo<WindowResizeEvent>(*this);
+//        m_eventBus.subscribeTo<WindowResizeEvent>(*this);
+        m_eventBus.subscribeTo<WindowCloseEvent>(*this);
+
         m_eventManager.pushBack(&m_eventBus);
-
-        WindowResizeEvent event;
-        m_eventManager.publishEvent<WindowResizeEvent>(event);
     }
 
     Application::~Application()
     {
-        // Cleanup
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
 
         LOG_INFO("exiting");
     }
 
     void Application::run()
     {
-        ImVec4 clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
+        glm::vec4 clear_color = glm::vec4(0.f, 0.f, 0.f, 1.00f);
 
-        while (!m_window.shouldClose())
+        while (m_doRun)
         {
             glfwPollEvents();
 
-            m_window.getInput().tick();
-
-            ActionState closeAction = m_window.getInput().getActionState(EInputAction::close);
-            if (closeAction.isActive)
-            {
-                m_window.shouldClose(true);
-            }
-
-            // Start the Dear ImGui frame
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-
-            {// Show stats window
-                ImGui::SetNextWindowSize(ImVec2{100, 50}, true);
-                ImGui::Begin("stats:");
-
-                ImGui::Text("fps: %.1f", ImGui::GetIO().Framerate);
-                ImGui::End();
-            }
-
-            // Rendering
-            ImGui::Render();
-            auto displaySize = m_window.getFrameBufferSize();
+            auto displaySize = m_pWindow->getFrameBufferSize();
             glViewport(0, 0, displaySize.x, displaySize.y);
             glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
             glClear(GL_COLOR_BUFFER_BIT);
 
             m_renderer.drawScene(m_scene);
 
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-            m_window.swapBuffers();
+            m_pWindow->swapBuffers();
         }
     }
 
@@ -149,7 +98,12 @@ namespace Beer
 
     bool Application::receive(const WindowResizeEvent &rEvent)
     {
-        LOG_INFO("Received");
+        return true;
+    }
+
+    bool Application::receive(const WindowCloseEvent &rEvent)
+    {
+        m_doRun = false;
         return true;
     }
 }// namespace DeBeer2d

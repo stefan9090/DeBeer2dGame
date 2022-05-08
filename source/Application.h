@@ -22,10 +22,12 @@ namespace Beer
     private:
         internal::EventManager m_eventManager;
         internal::EventEndPoint m_eventBus;
-        Window m_window;
+        std::unique_ptr<internal::Window> m_pWindow;
         ResourceManager m_resources;
         SpriteRenderer m_renderer;
         Scene m_scene;
+
+        bool m_doRun = true;
 
     protected:
         void loadTexture(std::string_view szPath);
@@ -38,6 +40,7 @@ namespace Beer
         void run();
 
         bool receive(const WindowResizeEvent &rEvent);
+        bool receive(const WindowCloseEvent &rEvent);
 
     private:
         static void glfwErrorCallback(int error, const char *description);

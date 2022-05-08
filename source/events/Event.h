@@ -24,6 +24,10 @@ namespace Beer
 
         public:
             FunctionWrapper() = default;
+            ~FunctionWrapper()
+            {
+
+            }
 
             template<typename Arg>
             explicit FunctionWrapper(std::function<bool(const Arg&)> func)
@@ -34,6 +38,10 @@ namespace Beer
             void wrapFunction(std::function<bool(const Arg&)> func)
             {
                 m_func = func;
+            }
+
+            void test()
+            {
             }
 
             template<typename Arg>
@@ -54,28 +62,20 @@ namespace Beer
 
         class EventEndPoint
         {
-            std::unordered_map<EventID, internal::FunctionWrapper> subscribers;
+            std::unordered_map<EventID, std::shared_ptr<internal::FunctionWrapper>> subscribers;
 
         public:
             template<typename EventType, typename SystemType>
             void subscribeTo(SystemType &receiver)
             {
-
                 auto func = [&receiver](const EventType &rEvent) -> bool {
                     return receiver.receive(rEvent);
                 };
 
-                internal::FunctionWrapper callback;
-                callback.wrapFunction<EventType>(func);
+                auto callback = std::make_shared<internal::FunctionWrapper>();
+                callback->wrapFunction<EventType>(func);
 
-                subscribers[EventType::getStaticEventID()] = callback;
-
-//                auto search = subscribers.find(EventType::getStaticEventID());
-//                if (search == subscribers.end())
-//                {
-//                    subscribers[EventType::getStaticEventID()] = std::unordered_map<EventClassID, internal::FunctionWrapper>();
-//                }
-//                subscribers[EventType::getStaticEventID()].insert({SystemType::getStaticSystemID(), callback});
+                subscribers[EventType::getStaticEventID()] = std::move(callback);
             }
 
             template<typename EventType, typename Receiver>
@@ -91,7 +91,7 @@ namespace Beer
             template<typename EventType>
             bool publishEvent(EventType &rEvent)
             {
-                return subscribers[EventType::getStaticEventID()](rEvent);
+                return subscribers[EventType::getStaticEventID()]->operator()(rEvent);
             }
         };
     }// namespace internal
