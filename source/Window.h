@@ -21,20 +21,23 @@ namespace Beer::internal
     {
     private:
         GLFWwindow *m_pWindow = nullptr;
-        InputManager m_input;
-        EventManager &m_rEventManager;
+
+        struct Data
+        {
+            EventManager &rEventManager;
+            InputManager inputManager;
+
+            explicit Data(EventManager &eventManager) : rEventManager(eventManager) {}
+        } m_data;
 
     public:
-        Window() = default;
         Window(const Window &rOther) = delete;
         Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor, EventManager &rEventManager);
         virtual ~Window();
 
         Window &operator=(const Window &rOther) = delete;
-        Window &operator=(Window &&rOther) noexcept;
 
         GLFWwindow *getWindow() const;
-        InputManager &getInput();
 
         void shouldClose(bool shouldClose);
         bool shouldClose();

@@ -47,7 +47,7 @@ namespace Beer
         m_resources.loadShader("sprite");
         m_renderer.init(m_resources, screenWidth, screenHeight);
 
-        m_pWindow->getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
+//        m_pWindow->getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
 
 //        m_eventBus.subscribeTo<WindowResizeEvent>(*this);
         m_eventBus.subscribeTo<WindowCloseEvent>(*this);

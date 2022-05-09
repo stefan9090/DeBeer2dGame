@@ -12,15 +12,20 @@ namespace Beer::internal
 {
     Window::Window(int screenWidth, int screenHeight, const std::string &strName, GLFWmonitor *pMonitor, EventManager &rEventManager)
         : m_pWindow(glfwCreateWindow(screenWidth, screenHeight, strName.c_str(), pMonitor, nullptr))
-        , m_rEventManager(rEventManager)
+        , m_data(rEventManager)
     {
 
-        glfwSetWindowUserPointer(m_pWindow, &m_rEventManager);
+        glfwSetWindowUserPointer(m_pWindow, &m_data);
 
         glfwSetWindowCloseCallback(m_pWindow, [](GLFWwindow *pWindow) {
-            auto *pEventManager = (EventManager*) glfwGetWindowUserPointer(pWindow);
+            auto *pData = (Data*) glfwGetWindowUserPointer(pWindow);
             WindowCloseEvent closeEvent;
-            pEventManager->publishEvent<WindowCloseEvent>(closeEvent);
+            pData->rEventManager.publishEvent<WindowCloseEvent>(closeEvent);
+        });
+
+        glfwSetKeyCallback(m_pWindow, [](GLFWwindow *pWindow, int key, int scancode, int action, int mods) {
+            auto *pData = (Data*) glfwGetWindowUserPointer(pWindow);
+            pData->inputManager.update(key, scancode, action, mods);
         });
     }
 
@@ -32,24 +37,9 @@ namespace Beer::internal
         }
     }
 
-    Window &Window::operator=(Window &&rOther) noexcept
-    {
-        this->m_pWindow = rOther.m_pWindow;
-        this->m_input = std::move(rOther.m_input);
-
-        rOther.m_pWindow = nullptr;
-
-        return *this;
-    }
-
     GLFWwindow *Window::getWindow() const
     {
         return m_pWindow;
-    }
-
-    InputManager &Window::getInput()
-    {
-        return m_input;
     }
 
     void Window::shouldClose(bool shouldClose)

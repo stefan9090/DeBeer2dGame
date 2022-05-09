@@ -3,32 +3,30 @@
 //
 
 #include "InputManager.h"
+
+#include <Logger.h>
+
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-InputManager::InputManager(GLFWwindow *pWindow)
-    : m_pWindow{pWindow}
-{
-}
-
-bool InputManager::isKeyPressedForAction(EInputAction action)
-{
-    if (!m_pWindow) return false;
-
-    bool pressed = false;
-
-    auto keySet = m_keyMapping.find(action);
-    if (keySet != m_keyMapping.end())
-    {
-        for (EInputKey key : keySet->second.keySet)
-        {
-            pressed = glfwGetKey(m_pWindow, static_cast<int>(key));
-            if (pressed) break;
-        }
-    }
-
-    return pressed;
-}
+//bool InputManager::isKeyPressedForAction(EInputAction action)
+//{
+//    if (!m_pWindow) return false;
+//
+//    bool pressed = false;
+//
+//    auto keySet = m_keyMapping.find(action);
+//    if (keySet != m_keyMapping.end())
+//    {
+//        for (EInputKey key : keySet->second.keySet)
+//        {
+//            pressed = glfwGetKey(m_pWindow, static_cast<int>(key));
+//            if (pressed) break;
+//        }
+//    }
+//
+//    return pressed;
+//}
 
 void InputManager::mapActionToKey(EInputAction action, EInputKey key)
 {
@@ -50,26 +48,27 @@ ActionState InputManager::getActionState(EInputAction action)
     return state;
 }
 
-void InputManager::tick()
+void InputManager::update(int key, int scancode, int action, int mods)
 {
-    if (!m_pWindow) return;
 
-    for (auto &[rAction, rActionInfo] : m_keyMapping)
-    {
-        bool isPressed = false;
-        for (EInputKey key : rActionInfo.keySet)
-        {
-            if (glfwGetKey(m_pWindow, static_cast<int>(key)))
-            {
-                isPressed = true;
-                break;
-            }
-        }
+    LOG_INFO("pressed {} {}", key, scancode);
 
-        if (isPressed != rActionInfo.keyPressed)
-        {
-            rActionInfo.stateTimePoint = steady_clock::now();
-            rActionInfo.keyPressed = isPressed;
-        }
-    }
+//    for (auto &[rAction, rActionInfo] : m_keyMapping)
+//    {
+//        bool isPressed = false;
+//        for (EInputKey key : rActionInfo.keySet)
+//        {
+//            if (glfwGetKey(m_pWindow, static_cast<int>(key)))
+//            {
+//                isPressed = true;
+//                break;
+//            }
+//        }
+//
+//        if (isPressed != rActionInfo.keyPressed)
+//        {
+//            rActionInfo.stateTimePoint = steady_clock::now();
+//            rActionInfo.keyPressed = isPressed;
+//        }
+//    }
 }

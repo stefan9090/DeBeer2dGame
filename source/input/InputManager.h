@@ -15,6 +15,7 @@
 
 enum class EInputKey : int
 {
+    none = -1,
     space = GLFW_KEY_SPACE,
     apostrophe = GLFW_KEY_APOSTROPHE,
     comma = GLFW_KEY_COMMA,
@@ -170,18 +171,15 @@ private:
     };
 
     std::unordered_map<EInputAction, ActionInfo> m_keyMapping;
-    GLFWwindow *m_pWindow{};
 
 public:
-    InputManager() = default;
-    InputManager(GLFWwindow *pWindow);
 
     void mapActionToKey(EInputAction action, EInputKey key);
 
     bool isKeyPressedForAction(EInputAction action);
     ActionState getActionState(EInputAction action);
 
-    void tick();
+    void update(int key, int scancode, int action, int mods);
 };
 
 
