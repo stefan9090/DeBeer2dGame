@@ -22,8 +22,7 @@ namespace Beer::internal
     private:
         GLFWwindow *m_pWindow = nullptr;
 
-        struct Data
-        {
+        struct Data {
             EventManager &rEventManager;
             InputManager inputManager;
 
@@ -40,10 +39,6 @@ namespace Beer::internal
 
         Window &operator=(const Window &rOther) = delete;
 
-        GLFWwindow *getWindow() const;
-
-        void shouldClose(bool shouldClose);
-        bool shouldClose();
         void makeContextCurrent();
         glm::vec<2, int> getFrameBufferSize();
         void swapBuffers();

@@ -25,37 +25,43 @@ namespace Beer
 
     struct KeyPressedEvent : public Event<KeyPressedEvent>
     {
-        EInputKey key = EInputKey::none;
+        EInputKey key = EInputKey::unknown;
     };
 
     struct KeyReleaseEvent : public Event<KeyReleaseEvent>
     {
-        EInputKey key = EInputKey::none;
+        EInputKey key = EInputKey::unknown;
     };
 
     struct KeyRepeatEvent : public Event<KeyRepeatEvent>
     {
-        EInputKey key = EInputKey::none;
+        EInputKey key = EInputKey::unknown;
         int count{};
     };
 
-    struct MouseScrollUpEvent : public Event<MouseScrollUpEvent>
+    struct MouseButtonPressedEvent : public Event<MouseButtonPressedEvent>
     {
-
+        EMouseButton button = EMouseButton::unknown;
     };
 
-    struct MouseScrollDownEvent : public Event<MouseScrollDownEvent>
+    struct MouseButtonReleasedEvent : public Event<MouseButtonReleasedEvent>
     {
+        EMouseButton button = EMouseButton::unknown;
+    };
 
+    struct MouseScrollEvent : public Event<MouseScrollEvent>
+    {
+        double xOffset{};
+        double yOffset{};
     };
 
     struct MouseMoveEvent : public Event<MouseMoveEvent>
     {
-        int newX{};
-        int newY{};
+        double newX{};
+        double newY{};
 
-        int deltaX{};
-        int deltaY{};
+        double deltaX{};
+        double deltaY{};
     };
 }
 

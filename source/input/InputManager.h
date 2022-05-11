@@ -18,7 +18,7 @@ namespace Beer
 
     enum class EInputKey : int
     {
-        none = -1,
+        unknown = -1,
         space = GLFW_KEY_SPACE,
         apostrophe = GLFW_KEY_APOSTROPHE,
         comma = GLFW_KEY_COMMA,
@@ -146,18 +146,40 @@ namespace Beer
         menu
     };
 
+    enum class EMouseButton : int
+    {
+        unknown = -1,
+        button1 = 0,
+        button2,
+        button3,
+        button4,
+        button5,
+        button6,
+        button7,
+        button8,
+        left = button1,
+        right = button2,
+        middle = button3
+    };
+
     namespace internal
     {
         class InputManager
         {
         private:
             EventManager &m_rEventManager;
-        public:
-            InputManager(EventManager &rEventManager);
-            void update(int key, int scancode, int action, int mods);
-        };
-    }
 
+            double m_lastCursorXPos{};
+            double m_lastCursorYPos{};
+
+        public:
+            explicit InputManager(EventManager &rEventManager);
+            void updateKeyInput(int key, int scancode, int action, int mods);
+            void updateMouseButtonInput(int button, int action, int mods);
+            void updateScrollInput(double xOffset, double yOffset);
+            void updateCursorPos(double xPos, double yPos);
+        };
+    }// namespace internal
 
 
 }// namespace Beer

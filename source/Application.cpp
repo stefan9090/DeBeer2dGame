@@ -29,11 +29,6 @@ namespace Beer
         int screenHeight = 600;
         m_pWindow = std::make_unique<internal::Window>(screenWidth, screenHeight, "DeBeer2d", nullptr, m_eventManager);
 
-        if (!m_pWindow->getWindow())
-        {
-            throw std::runtime_error("Failed to creat glfw window");
-        }
-
         m_pWindow->makeContextCurrent();
 
         glfwSwapInterval(1);// Enable vsync
@@ -47,9 +42,6 @@ namespace Beer
         m_resources.loadShader("sprite");
         m_renderer.init(m_resources, screenWidth, screenHeight);
 
-//        m_pWindow->getInput().mapActionToKey(EInputAction::close, EInputKey::escape);
-
-//        m_eventBus.subscribeTo<WindowResizeEvent>(*this);
         m_eventBus.subscribeTo<WindowCloseEvent>(*this);
 
         m_eventManager.pushBack(&m_eventBus);

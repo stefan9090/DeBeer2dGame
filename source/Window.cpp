@@ -4,8 +4,6 @@
 
 #include "Window.h"
 
-#include <glm/ext.hpp>
-
 #include "CoreEvents.h"
 
 namespace Beer::internal
@@ -14,7 +12,6 @@ namespace Beer::internal
         : m_pWindow(glfwCreateWindow(screenWidth, screenHeight, strName.c_str(), pMonitor, nullptr))
         , m_data(rEventManager)
     {
-
         glfwSetWindowUserPointer(m_pWindow, &m_data);
 
         glfwSetWindowCloseCallback(m_pWindow, [](GLFWwindow *pWindow) {
@@ -25,7 +22,22 @@ namespace Beer::internal
 
         glfwSetKeyCallback(m_pWindow, [](GLFWwindow *pWindow, int key, int scancode, int action, int mods) {
             auto *pData = (Data*) glfwGetWindowUserPointer(pWindow);
-            pData->inputManager.update(key, scancode, action, mods);
+            pData->inputManager.updateKeyInput(key, scancode, action, mods);
+        });
+
+        glfwSetMouseButtonCallback(m_pWindow, [](GLFWwindow *pWindow, int button, int action, int mods) {
+            auto *pData = (Data*) glfwGetWindowUserPointer(pWindow);
+            pData->inputManager.updateMouseButtonInput(button, action, mods);
+        });
+
+        glfwSetScrollCallback(m_pWindow, [](GLFWwindow *pWindow, double xOffset, double yOffset) {
+            auto *pData = (Data*) glfwGetWindowUserPointer(pWindow);
+            pData->inputManager.updateScrollInput(xOffset, yOffset);
+        });
+
+        glfwSetCursorPosCallback(m_pWindow, [](GLFWwindow *pWindow, double xPos, double yPos) {
+            auto *pData = (Data*) glfwGetWindowUserPointer(pWindow);
+            pData->inputManager.updateCursorPos(xPos, yPos);
         });
     }
 
@@ -35,21 +47,6 @@ namespace Beer::internal
         {
             glfwDestroyWindow(m_pWindow);
         }
-    }
-
-    GLFWwindow *Window::getWindow() const
-    {
-        return m_pWindow;
-    }
-
-    void Window::shouldClose(bool shouldClose)
-    {
-        glfwSetWindowShouldClose(m_pWindow, shouldClose);
-    }
-
-    bool Window::shouldClose()
-    {
-        return (glfwWindowShouldClose(m_pWindow) != 0);
     }
 
     void Window::makeContextCurrent()
@@ -77,8 +74,3 @@ namespace Beer::internal
         }
     }
 }// namespace Beer::internal
-
-//void Window::render(const SpriteRenderer &rRenderer)
-//{
-//
-//}
