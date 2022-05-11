@@ -91,7 +91,12 @@ namespace Beer
             template<typename EventType>
             bool publishEvent(EventType &rEvent)
             {
-                return subscribers[EventType::getStaticEventID()]->operator()(rEvent);
+                auto callback = subscribers.find(EventType::getStaticEventID());
+                if (callback != subscribers.end())
+                {
+                    return callback->second->operator()(rEvent);
+                }
+                return false;
             }
         };
     }// namespace internal

@@ -27,7 +27,10 @@ namespace Beer::internal
             EventManager &rEventManager;
             InputManager inputManager;
 
-            explicit Data(EventManager &eventManager) : rEventManager(eventManager) {}
+            explicit Data(EventManager &eventManager)
+                : rEventManager(eventManager)
+                , inputManager(rEventManager)
+            {}
         } m_data;
 
     public:

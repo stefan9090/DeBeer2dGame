@@ -6,69 +6,41 @@
 
 #include <Logger.h>
 
+#include <CoreEvents.h>
+
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-//bool InputManager::isKeyPressedForAction(EInputAction action)
-//{
-//    if (!m_pWindow) return false;
-//
-//    bool pressed = false;
-//
-//    auto keySet = m_keyMapping.find(action);
-//    if (keySet != m_keyMapping.end())
-//    {
-//        for (EInputKey key : keySet->second.keySet)
-//        {
-//            pressed = glfwGetKey(m_pWindow, static_cast<int>(key));
-//            if (pressed) break;
-//        }
-//    }
-//
-//    return pressed;
-//}
-
-void InputManager::mapActionToKey(EInputAction action, EInputKey key)
+namespace Beer::internal
 {
-    m_keyMapping[action].keySet.insert(key);
-}
-
-ActionState InputManager::getActionState(EInputAction action)
-{
-    ActionState state;
-
-    auto inputDef = m_keyMapping.find(action);
-    if (inputDef != m_keyMapping.end())
+    InputManager::InputManager(Beer::internal::EventManager &rEventManager)
+        : m_rEventManager(rEventManager)
     {
-        ActionInfo &rActionInfo = inputDef->second;
-        state.isActive = rActionInfo.keyPressed;
-        state.stateDuration = steady_clock::now() - rActionInfo.stateTimePoint;
     }
 
-    return state;
-}
-
-void InputManager::update(int key, int scancode, int action, int mods)
-{
-
-    LOG_INFO("pressed {} {}", key, scancode);
-
-//    for (auto &[rAction, rActionInfo] : m_keyMapping)
-//    {
-//        bool isPressed = false;
-//        for (EInputKey key : rActionInfo.keySet)
-//        {
-//            if (glfwGetKey(m_pWindow, static_cast<int>(key)))
-//            {
-//                isPressed = true;
-//                break;
-//            }
-//        }
-//
-//        if (isPressed != rActionInfo.keyPressed)
-//        {
-//            rActionInfo.stateTimePoint = steady_clock::now();
-//            rActionInfo.keyPressed = isPressed;
-//        }
-//    }
+    void InputManager::update(int key, int scancode, int action, int mods)
+    {
+        if (action == GLFW_PRESS)
+        {
+            KeyPressedEvent event;
+            event.key = static_cast<EInputKey>(key);
+            m_rEventManager.publishEvent<KeyPressedEvent>(event);
+        }
+        else if(action == GLFW_RELEASE)
+        {
+            KeyReleaseEvent event;
+            event.key = static_cast<EInputKey>(key);
+            m_rEventManager.publishEvent<KeyReleaseEvent>(event);
+        }
+        else if (action == GLFW_REPEAT)
+        {
+            KeyRepeatEvent event;
+            event.key = static_cast<EInputKey>(key);
+            m_rEventManager.publishEvent<KeyRepeatEvent>(event);
+        }
+        else
+        {
+            LOG_WARNING("Unknown key action");
+        }
+    }
 }
